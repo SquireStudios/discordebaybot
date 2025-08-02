@@ -19,7 +19,7 @@ client = openai.AsyncOpenAI(api_key=OPENAI_API_KEY)
 
 # Setup Discord bot with intents
 intents = discord.Intents.default()
-intents.message_content = True  # Fix here: allow reading message content
+intents.message_content = True  # Allow reading message content
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # eBay OAuth token function
