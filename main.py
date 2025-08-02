@@ -17,12 +17,12 @@ EBAY_CLIENT_SECRET = os.getenv("EBAY_CLIENT_SECRET")
 # Setup OpenAI client
 client = openai.AsyncOpenAI(api_key=OPENAI_API_KEY)
 
-# Setup Discord bot
+# Setup Discord bot with intents
 intents = discord.Intents.default()
-intents.messages = True
+intents.message_content = True  # Fix here: allow reading message content
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# eBay OAuth token
+# eBay OAuth token function
 def get_ebay_oauth_token():
     url = "https://api.ebay.com/identity/v1/oauth2/token"
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
@@ -53,19 +53,27 @@ async def ask_gpt(message):
             return response.choices[0].message.content
 
         except RateLimitError:
+            logging.warning("Rate limited, retrying in 5 seconds...")
             await asyncio.sleep(5)
         except APIConnectionError:
+            logging.warning("API connection error, retrying in 5 seconds...")
             await asyncio.sleep(5)
         except AuthenticationError:
+            logging.error("Authentication error: check your OpenAI API key.")
             return "Authentication error. Check your API key."
         except OpenAIError as e:
             logging.error(f"OpenAI error: {e}")
             await asyncio.sleep(5)
 
-# Discord command
+# Discord command to ask GPT
 @bot.command()
 async def ask(ctx, *, query):
     reply = await ask_gpt(query)
+    await ctx.send(reply)
+
+# Run the bot
+bot.run(DISCORD_TOKEN)
+
     await ctx.send(reply)
 
 # Run bot
