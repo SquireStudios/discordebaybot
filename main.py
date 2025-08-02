@@ -73,8 +73,3 @@ async def ask(ctx, *, query):
 
 # Run the bot
 bot.run(DISCORD_TOKEN)
-
-    await ctx.send(reply)
-
-# Run bot
-bot.run(DISCORD_TOKEN)
